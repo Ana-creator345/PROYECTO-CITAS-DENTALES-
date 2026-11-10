@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sonrisa Clara · Tu cita, a tiempo</title>
+<style>
+:root{
+  --bg:#eaf5fd; --card:#ffffff; --text:#12324a; --muted:#4a6579;
+  --brand:#0a6fb0; --brand-text:#ffffff; --soft:#d3ebfb; --line:#a9d3ee; --focus:#ffb000; --err:#b3261e;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c2233; --card:#12324a; --text:#eaf5fd; --muted:#b4cfe3;
+    --brand:#5cb8f0; --brand-text:#06233a; --soft:#1a4262; --line:#2e6389; --err:#ffb4ab; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0c2233; --card:#12324a; --text:#eaf5fd; --muted:#b4cfe3;
+  --brand:#5cb8f0; --brand-text:#06233a; --soft:#1a4262; --line:#2e6389; --err:#ffb4ab; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:18px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+main{max-width:480px;margin:0 auto;padding:20px 16px 28px}
+header{text-align:center;padding:8px 0 18px}
+header .logo{font-size:40px;line-height:1}
+h1{margin:6px 0 2px;font-size:24px;line-height:1.2}
+header p{margin:0;font-size:22px;font-weight:700;color:var(--brand)}
+header small{display:block;color:var(--muted);font-size:16px;margin-top:2px}
+.actions{display:grid;gap:12px}
+.btn{width:100%;min-height:56px;border:2px solid var(--brand);border-radius:14px;background:var(--card);color:var(--brand);font:inherit;font-weight:700;font-size:19px;cursor:pointer;padding:12px 16px}
+.btn[aria-expanded="true"]{background:var(--brand);color:var(--brand-text)}
+.btn.primary{background:var(--brand);color:var(--brand-text)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:16px;margin-top:14px}
+.panel[hidden]{display:none}
+.panel h2{margin:0 0 10px;font-size:20px}
+label{display:block;font-weight:600;margin:12px 0 6px}
+input,select{width:100%;min-height:52px;padding:10px 12px;font:inherit;font-size:18px;color:var(--text);background:var(--bg);border:2px solid var(--line);border-radius:12px}
+.send{margin-top:16px}
+.err{color:var(--err);font-weight:600;margin:10px 0 0}
+.fallback{margin:12px 0 0;font-size:16px}
+.fallback a{color:var(--brand);font-weight:700}
+section.info{background:var(--soft);border-radius:16px;padding:14px 16px;margin-top:18px}
+section.info h2{margin:0 0 8px;font-size:19px}
+section.info ul{margin:0;padding-left:22px}
+section.info li{margin:4px 0}
+section.info p{margin:4px 0}
+footer{margin-top:18px;text-align:center;color:var(--muted);font-size:15px}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="logo" aria-hidden="true">🦷</div>
+    <h1>Consultorio Dental Sonrisa Clara</h1>
+    <p>Tu cita, a tiempo</p>
+    <small>Jesús María, Lima</small>
+  </header>
+
+  <div class="actions" role="group" aria-label="Elige qué quieres hacer">
+    <button class="btn primary" type="button" data-t="agendar" aria-expanded="false" aria-controls="panel">Agendar mi control</button>
+    <button class="btn" type="button" data-t="confirmar" aria-expanded="false" aria-controls="panel">Confirmar mi cita</button>
+    <button class="btn" type="button" data-t="reprogramar" aria-expanded="false" aria-controls="panel">Reprogramar mi cita</button>
+  </div>
+
+  <div class="panel" id="panel" hidden>
+    <h2 id="ptitle"></h2>
+    <form id="f" novalidate>
+      <div id="fields"></div>
+      <p class="err" id="err" role="alert"></p>
+      <button class="btn primary send" type="submit">Enviar por WhatsApp</button>
+    </form>
+    <p class="fallback" id="fb" hidden>¿No se abrió WhatsApp? <a id="fbl" href="#" target="_blank" rel="noopener">Toca aquí</a>.</p>
+  </div>
+
+  <section class="info" aria-labelledby="antes">
+    <h2 id="antes">Antes de tu cita</h2>
+    <ul>
+      <li>Llega 10 minutos antes.</li>
+      <li>Avísanos con 24 horas de anticipación si no puedes asistir.</li>
+      <li>Trae tu lista de medicamentos.</li>
+    </ul>
+  </section>
+
+  <section class="info" aria-labelledby="hor">
+    <h2 id="hor">Horario</h2>
+    <p><strong>Lunes a viernes:</strong> 9:00 a. m. a 8:00 p. m.</p>
+    <p><strong>Sábados:</strong> 9:00 a. m. a 1:00 p. m.</p>
+  </section>
+
+  <footer>Tus datos solo se usan para gestionar tu cita.</footer>
+</main>
+
+<script>
+(function(){
+  var WA = "5618368080";
+  var t0 = new Date();
+  var min = t0.getFullYear()+"-"+String(t0.getMonth()+1).padStart(2,"0")+"-"+String(t0.getDate()).padStart(2,"0");
+
+  function fld(id,label,type,extra){
+    return '<label for="'+id+'">'+label+'</label><input id="'+id+'" name="'+id+'" type="'+type+'" '+(extra||"")+' required>';
+  }
+  function sel(id,label,opts){
+    return '<label for="'+id+'">'+label+'</label><select id="'+id+'" name="'+id+'" required><option value="">Elige una opción</option>'+
+      opts.map(function(o){return '<option>'+o+'</option>';}).join("")+'</select>';
+  }
+  function d(s){var p=s.split("-");return p[2]+"/"+p[1]+"/"+p[0];}
+  var nombre = fld("nombre","Tu nombre","text",'autocomplete="name" autocapitalize="words" maxlength="80"');
+  var forms = {
+    agendar:{
+      title:"Agendar mi control",
+      html: nombre +
+        sel("servicio","Servicio",["Control y limpieza","Curación","Ortodoncia","Otro"]) +
+        fld("dia","Día preferido","date",'min="'+min+'"') +
+        sel("turno","Turno",["Mañana","Tarde"]),
+      msg:function(v){return "Hola, soy "+v.nombre+". Quiero agendar una cita.\nServicio: "+v.servicio+"\nDía preferido: "+d(v.dia)+"\nTurno: "+v.turno.toLowerCase()+"\n¿Me confirman disponibilidad? Gracias.";}
+    },
+    confirmar:{
+      title:"Confirmar mi cita",
+      html: nombre + fld("fecha","Fecha de tu cita","date"),
+      msg:function(v){return "Hola, soy "+v.nombre+". Confirmo mi cita del "+d(v.fecha)+". Gracias.";}
+    },
+    reprogramar:{
+      title:"Reprogramar mi cita",
+      html: nombre + fld("fecha","Fecha actual de tu cita","date") + fld("nueva","Nueva fecha preferida","date",'min="'+min+'"'),
+      msg:function(v){return "Hola, soy "+v.nombre+". Necesito reprogramar mi cita del "+d(v.fecha)+". Prefiero el "+d(v.nueva)+". ¿Me confirman si hay espacio? Gracias.";}
+    }
+  };
+
+  var current=null, panel=document.getElementById("panel"), fields=document.getElementById("fields"),
+      err=document.getElementById("err"), fb=document.getElementById("fb"), fbl=document.getElementById("fbl"),
+      btns=document.querySelectorAll(".actions .btn");
+
+  function show(t){
+    if(current===t){return;}
+    current=t;
+    Array.prototype.forEach.call(btns,function(b){b.setAttribute("aria-expanded", b.getAttribute("data-t")===t?"true":"false");});
+    document.getElementById("ptitle").textContent=forms[t].title;
+    fields.innerHTML=forms[t].html;
+    err.textContent=""; fb.hidden=true; panel.hidden=false;
+    panel.scrollIntoView({behavior:"smooth",block:"nearest"});
+    var first=fields.querySelector("input,select"); if(first){first.focus({preventScroll:true});}
+  }
+  Array.prototype.forEach.call(btns,function(b){b.addEventListener("click",function(){show(b.getAttribute("data-t"));});});
+
+  document.getElementById("f").addEventListener("submit",function(e){
+    e.preventDefault();
+    var v={}, ok=true;
+    Array.prototype.forEach.call(fields.querySelectorAll("input,select"),function(el){
+      v[el.name]=el.value.trim();
+      if(!v[el.name]){ok=false;}
+    });
+    if(!ok){err.textContent="Por favor completa todos los campos."; return;}
+    err.textContent="";
+    var url="https://wa.me/"+WA+"?text="+encodeURIComponent(forms[current].msg(v));
+    fbl.href=url; fb.hidden=false;
+    var a=document.createElement("a");
+    a.href=url; a.target="_blank"; a.rel="noopener";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  });
+})();
+</script>
+</body>
+</html>
